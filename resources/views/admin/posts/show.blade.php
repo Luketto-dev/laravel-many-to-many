@@ -21,6 +21,8 @@
                     <dd>{{ $post->user->name }}</dd>
                     <dt>Categoria</dt>
                     <dd>{{ $post->category ? $post->category->name : '' }}</dd>
+                    <dt>Tags</dt>
+                    <dd>{{ $post->tags ?  $post->tags->implode("name", ' - ') : '' }}</dd>
 
                 </dl>
                 <a href="{{ route('admin.posts.edit', ['post' => $post->slug]) }}"

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Category;
 use App\Post;
 use App\Http\Controllers\Controller;
+use App\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -93,7 +94,8 @@ class PostController extends Controller
         $validatedData = $request->validate([
             "title" => "required|min:10",
             "content" => "required|min:10",
-            "category_id" => "nullable|exists:categories,id"
+            "category_id" => "nullable|exists:categories,id",
+            "tags" => "nullable|exists:tags,id"
         ]);
 
         // salvare a db i dati
@@ -106,6 +108,13 @@ class PostController extends Controller
         $post->slug = $this->generateSlug($post->title);
 
         $post->save();
+
+        // nel caso dello store prima di associare i tag devo salvare il post creato in modo da
+        // permettere al db di generare un ID per il post, questo id è essenziale per fare l associazione nella tab ponte
+        if (key_exists("tags", $validatedData)) {
+            $post->tags()->attach($validatedData['tags']);
+        }
+        
 
         //redirect su una pagina desiderata, di solito show
         return redirect()-> route("admin.posts.show", $post->slug);
@@ -134,8 +143,10 @@ class PostController extends Controller
     public function edit($slug)
     {
         $post = $this->findBySlug($slug);
+        $categories = Category::all();
+        $tags = Tag::all();
 
-        return view("admin.posts.edit", compact("post"));
+        return view("admin.posts.edit", compact("post", "categories", "tags"));
     }
 
     /**
@@ -150,7 +161,9 @@ class PostController extends Controller
         // validare i dati ricevuti
         $validatedData = $request->validate([
             "title" => "required|min:10",
-            "content" => "required|min:10"
+            "content" => "required|min:10",
+            "category_id" => "nullable|exists:categories,id",
+            "tags" => "nullable|exists:tags,id"
         ]);
 
         $post = $this->findBySlug($slug);
@@ -159,6 +172,21 @@ class PostController extends Controller
             //genero nuovo slug
             $post->slug = $this->generateSlug($validatedData["title"]);
         }
+
+        //toglie dalla tab ponte tutte le relazioni dei $post
+        $post->tags()->detach();
+
+        //se l utente mi invia deio tag, devo associarli al post corrente
+        //se non mi invia i tag, devo rimuovere tutte le associazioni asistenti per il post corrente
+
+        if (key_exists("tags", $validatedData)) {
+
+            //salvo l associazione di questo post con i tag che gli vado a passare
+            $post->tags()->attach($validatedData['tags']);
+            //$post->tags()->sync($validatedData['tags']);
+
+        }
+        
         $post->update($validatedData);
 
         return redirect()->route("admin.posts.show", $post->slug);

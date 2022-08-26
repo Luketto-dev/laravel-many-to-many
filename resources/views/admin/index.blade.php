@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ __('Dashboard') }}</div>
+                <div class="card-header fs-3">Benvenuto {{Auth::user()->name}}</div>
 
                 <div class="card-body">
                     @if (session('status'))
@@ -14,7 +14,8 @@
                         </div>
                     @endif
 
-                    {{ __('You are logged in!') }}
+                    <a href="{{route("admin.posts.index")}}" class="btn btn-primary">Vai ai Post</a>
+                    <a href="{{route("admin.users.index")}}" class="btn btn-secondary">Vai agli Utenti</a>
                 </div>
             </div>
         </div>

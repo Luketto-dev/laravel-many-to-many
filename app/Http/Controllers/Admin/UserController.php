@@ -27,9 +27,11 @@ class UserController extends Controller
     public function update(Request $request, $id){
 
         $data = $request->all();
+        
 
         $user = User::findOrFail($id);
         
+        $user->update($data);
         // può capitare che nella seconda tab non ci sia ancora nessuna informazione
         //sull utente indicato
         //in questo caso dobbiamo crearli noi manualmente, come se stessimo facendo il CREATE
@@ -43,7 +45,6 @@ class UserController extends Controller
             $user->details->update($data);
         }
 
-        $user->update($data);
         
         return redirect()->route("admin.users.edit", $user->id);
     }

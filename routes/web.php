@@ -30,9 +30,13 @@ Route::middleware("auth")
     //crea una rotta per la home-page amministrativa
     Route::get('/', 'HomeController@index')->name('index');
 
-    //rotta per la index degli utenti, mi mostra la lista degli utente
+    //rotta per la index degli utenti, mi mostra la lista degli utenti
     Route::get('/users', 'UserController@index')->name('users.index');
+
+    //rotta per l update degli utenti, salva la modifica fatta agli utenti
     Route::put('/users/{user}', 'UserController@update')->name('users.update');
+
+    //rotta per l edit degli utenti, mostra un form per cambiare le informazioni degli utenti
     Route::get('/users/{user}/edit', 'UserController@edit')->name('users.edit');
     
 
