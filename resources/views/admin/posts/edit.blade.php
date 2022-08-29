@@ -25,6 +25,19 @@
             <form action="{{ route('admin.posts.update', ['post' => $post->slug]) }}" method="post" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
+                <div class="d-flex align-items-center">
+                    @if($post->cover_img)
+                    <img class="img-thumbnail mr-3" src="{{asset('storage/' . $post->cover_img)}}" style="width: 125px" alt="">
+                    @endif
+                    <div class="custom-file w-50">
+                        <label class="custom-file-label" for="cover_img_file">Aggiungi immagine di copertina</label>
+                        <input name="cover_img" type="file" class="custom-file-input" id="cover_img_file">
+                        @error('cover_img')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+                
 
                 <div class="form-group">
                     <label>Titolo</label>
@@ -48,7 +61,8 @@
                     <select name="category_id" class="form-control @error('category_id') is-invalid @enderror" rows="10">
                         <option value=""></option>
                         @foreach($categories as $category)
-                        <option value="{{$category->id}}">{{$category->name}}</option>
+                        <option value="{{$category->id}}"
+                            {{ old('category_id', $post->category_id) === $category->id ? 'selected' : '' }}>{{$category->name}}</option>
                         @endforeach
                     </select>
                     @error('category_id')

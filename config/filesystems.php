@@ -43,11 +43,13 @@ return [
 
     'disks' => [
 
+        // non visibile ci carichiamo dati sensibili 
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),
         ],
 
+        // public è visibile a tutti ci carichiamo per esempio le immagini dei post
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

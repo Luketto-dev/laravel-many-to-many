@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
@@ -79,7 +80,9 @@ class PostController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return view("admin.posts.create", compact("categories"));
+        $tags = Tag::all();
+
+        return view("admin.posts.create", compact("categories", "tags"));
     }
 
     /**
@@ -163,10 +166,25 @@ class PostController extends Controller
             "title" => "required|min:10",
             "content" => "required|min:10",
             "category_id" => "nullable|exists:categories,id",
-            "tags" => "nullable|exists:tags,id"
+            "tags" => "nullable|exists:tags,id",
+            "cover_img" => "nullable|mimes:jpeg,png,jpg,gif,svg|max:2048"
         ]);
 
+
         $post = $this->findBySlug($slug);
+
+        // cover img non esisterà sempre quindi lo salvo solo se ho la chiave presente nell array dei dati validati
+        // controlliamo se il file è stato inviato dall utente
+        if (key_exists("cover_img", $validatedData)) {
+            
+            if ($post->cover_img) {
+                Storage::delete($post->cover_img);
+            }
+
+            $cover_img = Storage::put("/post_covers", $validatedData["cover_img"]);
+
+            $post->cover_img = $cover_img;
+        }
 
         if ($validatedData["title"] !== $post->title) {
             //genero nuovo slug
