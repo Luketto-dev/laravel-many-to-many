@@ -167,7 +167,7 @@ class PostController extends Controller
             "content" => "required|min:10",
             "category_id" => "nullable|exists:categories,id",
             "tags" => "nullable|exists:tags,id",
-            "cover_img" => "nullable|mimes:jpeg,png,jpg,gif,svg|max:2048"
+            "cover_img" => "nullable|mimes:jpeg,png,jpg,gif,svg|max:2048" // ho dovuto inserire i mimes altrimenti non fuinzionava bene con solo |image
         ]);
 
 
